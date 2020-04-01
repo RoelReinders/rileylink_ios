@@ -79,10 +79,11 @@ func ~=<T: RegularExpressionMatchable>(pattern: Regex, matchable: T) -> Bool {
 
 class LoopIssueReportParser {
     // * 2018-12-27 01:46:56 +0000 send 1f0e41a6101f1a0e81ed50b102010a0101a000340034170d000208000186a00000000000000111
+    // * 2020-04-01 03:58:43 +0000 Omnipod 1F01D434 send 1f01d434100c190a2bff79fc78370005080200f2
     func parseLine(_ line: String) {
         let components = line.components(separatedBy: .whitespaces)
-        if components.count == 6, let data = Data(hexadecimalString: components[5]) {
-            let direction = components[4].padding(toLength: 7, withPad: " ", startingAt: 0)
+        if components.count == 8, let data = Data(hexadecimalString: components[7]) {
+            let direction = components[6].padding(toLength: 7, withPad: " ", startingAt: 0)
             guard direction.lowercased() == "send   " || direction.lowercased() == "receive" else {
                 return
             }
@@ -260,8 +261,8 @@ for filename in CommandLine.arguments[1...] {
                 // 2018-12-24T10:58:41.3d ID1:1f0f407e PTYPE:POD SEQ:02 ID2:1f0f407e B9:3c BLEN:24 BODY:0216020d0000000000d23102b103ff02b1000008ab08016e83 CRC:c2
                 // 2018-05-25T13:03:51.765792 ID1:ffffffff PTYPE:POD SEQ:01 ID2:ffffffff B9:04 BLEN:23 BODY:011502070002070002020000aa6400088cb98f1f16b11e82a5 CRC:72
                 rtlOmniParser.parseLine(line)
-            case Regex("(send|receive) [0-9a-fA-F]+"):
-                // 2018-12-27 01:46:56 +0000 send 1f0e41a6101f1a0e81ed50b102010a0101a000340034170d000208000186a00000000000000111
+            case Regex("Omnipod (noPod|[0-9a-fA-F]+) (send|receive)"):
+                // 2020-04-01 03:58:43 +0000 Omnipod 1F01D434 send 1f01d434100c190a2bff79fc78370005080200f2
                 loopIssueReportParser.parseLine(line)
             case Regex("RL (Send|Recv) ?\\(single\\): [0-9a-fA-F]+"):
 //              2019-02-09 08:23:27.605518-0800 Loop[2978:2294033] [PeripheralManager+RileyLink] RL Send (single): 17050005000000000002580000281f0c27a4591f0c27a447
